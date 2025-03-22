@@ -31,12 +31,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'OcppApp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "djangorestframework",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +72,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'EVCharger.wsgi.application'
 
+
+ASGI_APPLICATION = "EVCharger.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
