@@ -1,9 +1,9 @@
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from ocpp.routing import on
-from ocpp.v16 import call_result
+from ocpp.v16 import call_result, call
 from ocpp.v16 import ChargePoint as OcppChargePoint
-from ocpp.v16.enums import Action, RegistrationStatus, AuthorizationStatus
+from ocpp.v16.enums import Action, RegistrationStatus, AuthorizationStatus, Reason
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,30 @@ class CustomChargePoint(OcppChargePoint):
         logger.info(f"Authorization result for {id_tag}: {status}")
 
         return call_result.Authorize(id_tag_info={"status": status})
+    
+    @on(Action.start_transaction)
+    async def on_start_transaction(self, connector_id, id_tag, meter_start, timestamp, reservation_id=None, **kwargs):
+        """ Handle StartTransaction request from charge point """
+        logger.info(f"StartTransaction received for idTag {id_tag} on connector {connector_id}")
 
+        # Simulating a successful transaction start
+        transaction_id = 1234  # In a real scenario, this should be generated dynamically
+
+        logger.info(f"Transaction started: {transaction_id}")
+
+        return call_result.StartTransaction(
+            transaction_id=transaction_id,
+            id_tag_info={"status": AuthorizationStatus.accepted},
+        )
+
+    @on(Action.stop_transaction)
+    async def on_stop_transaction(self, transaction_id, meter_stop, timestamp, reason, **kwargs):
+        """ Handle StopTransaction request from charge point """
+        logger.info(f"StopTransaction received for transaction {transaction_id}")
+    
+        return call_result.StopTransaction(
+            id_tag_info={"status": AuthorizationStatus.accepted},
+        )
 class OCPPConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         """ WebSocket connection handler """
