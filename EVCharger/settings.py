@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'OcppApp',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "djangorestframework",
+    'rest_framework',
     "channels",
 ]
 
@@ -70,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'EVCharger.wsgi.application'
+#WSGI_APPLICATION = 'EVCharger.wsgi.application'
 
 
 ASGI_APPLICATION = "EVCharger.asgi.application"
