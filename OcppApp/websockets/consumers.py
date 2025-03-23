@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from ocpp.routing import on
 from ocpp.v16 import call_result
 from ocpp.v16 import ChargePoint as OcppChargePoint
-from ocpp.v16.enums import Action, RegistrationStatus
+from ocpp.v16.enums import Action, RegistrationStatus, AuthorizationStatus
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
@@ -28,12 +28,18 @@ class CustomChargePoint(OcppChargePoint):
         return call_result.Heartbeat(
             current_time="2025-01-01T12:00:00Z"
         )
-    @on(Action.status_notification)
-    async def on_status_notification(self, connector_id, error_code, status, **kwargs):
-        """ Handle StatusNotification message """
-        logger.info(f"StatusNotification received - Connector: {connector_id}, Status: {status}")
+    @on(Action.authorize)
+    async def on_authorize(self, id_tag, **kwargs):
+        """ Handle Authorize request from charge point """
+        logger.info(f"Authorize request received for idTag: {id_tag}")
 
-        return call_result.StatusNotification()
+        # Simulating authorization (you can add real logic here)
+        authorized_tags = {"12345", "67890"}  # Example valid RFID tags
+        status = AuthorizationStatus.accepted if id_tag in authorized_tags else AuthorizationStatus.invalid
+
+        logger.info(f"Authorization result for {id_tag}: {status}")
+
+        return call_result.Authorize(id_tag_info={"status": status})
 
 class OCPPConsumer(AsyncWebsocketConsumer):
     async def connect(self):
