@@ -4,6 +4,7 @@ from ocpp.routing import on
 from ocpp.v16 import call_result
 from ocpp.v16 import ChargePoint as OcppChargePoint
 from ocpp.v16.enums import Action, RegistrationStatus
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class CustomChargePoint(OcppChargePoint):
         logger.info(f"Boot notification received from: {charge_point_model}")
         return call_result.BootNotification(
             status=RegistrationStatus.accepted,
-            current_time="2025-01-01T12:00:00Z",
+            current_time= datetime.now(timezone.utc).isoformat(),
             interval=300,
         )
 
@@ -27,6 +28,12 @@ class CustomChargePoint(OcppChargePoint):
         return call_result.Heartbeat(
             current_time="2025-01-01T12:00:00Z"
         )
+    @on(Action.status_notification)
+    async def on_status_notification(self, connector_id, error_code, status, **kwargs):
+        """ Handle StatusNotification message """
+        logger.info(f"StatusNotification received - Connector: {connector_id}, Status: {status}")
+
+        return call_result.StatusNotification()
 
 class OCPPConsumer(AsyncWebsocketConsumer):
     async def connect(self):

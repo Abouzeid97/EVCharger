@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import websockets
+
+from ocpp.v16.enums import ChargePointStatus 
 from ocpp.v16 import call
 from ocpp.v16 import ChargePoint as cp
 
@@ -24,6 +26,17 @@ class ChargePointClient(cp):
         response = await self.call(request)
         logging.info(f"Heartbeat response: {response}")
 
+    async def send_status_notification(self):
+        """ Send a StatusNotification message """
+        logging.info("DEBUG: Sending StatusNotification...")
+        request = call.StatusNotification(
+            connector_id=1,
+            error_code="NoError",
+            status=ChargePointStatus.available
+        )
+        response = await self.call(request)
+        logging.info(f"StatusNotification response: {response}")
+
 async def main():
     uri = "ws://localhost:8000/ws/ocpp/charger123/"
     
@@ -37,11 +50,12 @@ async def main():
 
         # Register charger with CSMS
         await charge_point.send_boot_notification()
-
-        # Send heartbeat every 10 seconds
+        
+        # Send periodic messages
         while True:
             await charge_point.send_heartbeat()
-            await asyncio.sleep(10)
+            await charge_point.send_status_notification()  
+            await asyncio.sleep(10) 
 
 if __name__ == "__main__":
     asyncio.run(main())
