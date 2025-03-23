@@ -31,9 +31,9 @@ async def main():
         charge_point = ChargePointClient("test_charger_01", ws)
 
         # Start listening in the background
-        asyncio.create_task(charge_point.start())  # ✅ Run start() concurrently
+        asyncio.create_task(charge_point.start()) 
 
-        await asyncio.sleep(2)  # ✅ Give time for WebSocket to establish
+        await asyncio.sleep(2)  
 
         # Register charger with CSMS
         await charge_point.send_boot_notification()

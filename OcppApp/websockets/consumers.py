@@ -32,7 +32,7 @@ class OCPPConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         """ WebSocket connection handler """
         self.charger_id = self.scope["url_route"]["kwargs"]["charger_id"]
-        self.charge_point = CustomChargePoint(self.charger_id, self)  # 🔥 Use custom ChargePoint
+        self.charge_point = CustomChargePoint(self.charger_id, self) 
 
         await self.accept()
         logger.info(f"Charger {self.charger_id} connected via WebSocket")
@@ -44,4 +44,4 @@ class OCPPConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         """ Route incoming OCPP messages to appropriate handlers """
         logger.info(f"DEBUG: Received message: {text_data}")
-        await self.charge_point.route_message(text_data)  # 🔥 Call route_message()
+        await self.charge_point.route_message(text_data) 
